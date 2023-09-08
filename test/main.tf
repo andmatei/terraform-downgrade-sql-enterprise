@@ -49,7 +49,6 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
 }
@@ -62,9 +61,23 @@ resource "aws_route" "public_internet_gateway" {
 
 ## Security group
 
-data "aws_security_group" "this" {
+resource "aws_security_group" "this" {
+  name   = "${local.prefix}-sg"
   vpc_id = aws_vpc.this.id
-  name   = "default"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
 }
 
 ## SQL Enterprise EC2 Instance
@@ -83,7 +96,7 @@ resource "aws_instance" "this" {
   ami           = data.aws_ami.windows_sql_enterprise.id
   instance_type = "t3.2xlarge"
 
-  security_groups = [data.aws_security_group.this.id]
+  security_groups = [aws_security_group.this.id]
   subnet_id       = aws_subnet.public.id
 
   tags = {
@@ -92,7 +105,7 @@ resource "aws_instance" "this" {
 }
 
 module "aws_instance_copy" {
-  source = "../"
+  source = "./.."
 
   instance_id = aws_instance.this.id
 }
