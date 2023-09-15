@@ -79,7 +79,7 @@ else {
 }
 
 
-$ConnectionString = "Server= $SQLInstanceName;Database=Master;User Id = $SQLSaUser;Password = $SQLSaPassword;TrustServerCertificate=True"
+$ConnectionString = "Server=$SQLInstanceName;Database=Master;User Id=$SQLSaUser;Password=$SQLSaPassword;TrustServerCertificate=True;"
 $timeStamp = Get-Date -format yyyy_MM_dd_HHmmss
 
 #Check if SQL Server is running
